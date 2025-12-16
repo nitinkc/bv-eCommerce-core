@@ -1,1 +1,6 @@
+# Root .gitignore
 .idea/
+target/
+*.iml
+*.log
+
