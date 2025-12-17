@@ -1,0 +1,33 @@
+# .dockerignore
+.idea/
+target/
+*.iml
+*.log
+# Product Service
+
+This service manages the product catalog, including CRUD operations and price versioning. It exposes REST APIs as defined in the domain architecture.
+
+## API Endpoints
+- POST /api/v1/products
+- GET /api/v1/products/{id}
+
+## Tech Stack
+- Java, Spring Boot
+- Maven
+- H2/PostgreSQL (configurable)
+- Flyway for DB migrations
+
+## Running Locally
+```
+mvn spring-boot:run
+```
+
+## Testing
+```
+mvn test
+```
+
+## Deployment
+- Build Docker image: `docker build -t product-service .`
+- Run: `docker run -p 8080:8080 product-service`
+

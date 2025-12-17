@@ -5,35 +5,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.bitvelocity</groupId>
-  <artifactId>bitvelocity-parent</artifactId>
+  <groupId>com.bit.velocity</groupId>
+  <artifactId>bitvelocity-eCommerce</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>BitVelocity Parent</name>
 
-  <modules>
-    <module>libs/bv-platform-bom</module>
-    <module>libs/bv-core-common</module>
-    <module>libs/bv-event-core</module>
-    <module>libs/bv-security-lib</module>
-    <module>libs/bv-test-core</module>
-    <module>services/auth-service</module>
-    <module>services/product-service</module>
-    <module>services/order-service</module>
-    <module>infra/pulumi-java</module>
-  </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.bitvelocity</groupId>
-        <artifactId>bv-platform-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <parent>
+    <groupId>com.github.nitinkc</groupId>
+    <artifactId>bit-velocity-parent</artifactId>
+    <version>0.0.12-SNAPSHOT</version>
+    <relativePath/> <!-- Forces Maven to fetch from remote, not local file -->
+  </parent>
 
   <properties>
     <java.version>21</java.version>
@@ -41,28 +24,18 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.11.0</version>
-          <configuration>
-            <release>${maven.compiler.release}</release>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>${spring.boot.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.11</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+
+
+  <modules>
+    <module>product-service</module>
+    <module>cart-service</module>
+    <module>order-service</module>
+    <module>inventory-service</module>
+    <module>notification-service</module>
+    <module>pricing-service</module>
+    <module>payment-adapter-service</module>
+    <module>partner-webhook-dispatcher</module>
+    <module>analytics-streaming-service</module>
+    <module>replay-service</module>
+  </modules>
 </project>
