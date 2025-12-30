@@ -56,7 +56,3 @@
 - Document and test idempotency semantics.
 - Test replay procedures and security denial scenarios.
 
----
-
-**Reference: DOMAIN_ECOMMERCE_ARCHITECTURE.md for full details and rationale.**
-
