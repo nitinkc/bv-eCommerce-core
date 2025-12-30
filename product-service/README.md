@@ -161,19 +161,19 @@ curl "http://localhost:8081/api/products/search?query=laptop"
 
 ### Endpoints
 
-| Method | Endpoint | Description | Query Params |
-|--------|----------|-------------|--------------|
-| `GET` | `/api/products` | List all products (paginated) | page, size, sortBy, sortDir |
-| `GET` | `/api/products/search` | Search by name/description | query |
-| `GET` | `/api/products/category/{category}` | Filter by category | - |
-| `GET` | `/api/products/status/{status}` | Filter by status | - |
-| `GET` | `/api/products/active` | Get active products only | - |
-| `GET` | `/api/products/{id}` | Get product by UUID | - |
-| `GET` | `/api/products/sku/{sku}` | Get product by SKU | - |
-| `POST` | `/api/products` | Create new product | - |
-| `PUT` | `/api/products/{id}` | Update product (partial) | - |
-| `PATCH` | `/api/products/{id}/stock` | Update stock quantity | - |
-| `DELETE` | `/api/products/{id}` | Delete product | - |
+| Method   | Endpoint                            | Description                   | Query Params                |
+|:---------|:------------------------------------|:------------------------------|:----------------------------|
+| `GET`    | `/api/products`                     | List all products (paginated) | page, size, sortBy, sortDir |
+| `GET`    | `/api/products/search`              | Search by name/description    | query                       |
+| `GET`    | `/api/products/category/{category}` | Filter by category            | -                           |
+| `GET`    | `/api/products/status/{status}`     | Filter by status              | -                           |
+| `GET`    | `/api/products/active`              | Get active products only      | -                           |
+| `GET`    | `/api/products/{id}`                | Get product by UUID           | -                           |
+| `GET`    | `/api/products/sku/{sku}`           | Get product by SKU            | -                           |
+| `POST`   | `/api/products`                     | Create new product            | -                           |
+| `PUT`    | `/api/products/{id}`                | Update product (partial)      | -                           |
+| `PATCH`  | `/api/products/{id}/stock`          | Update stock quantity         | -                           |
+| `DELETE` | `/api/products/{id}`                | Delete product                | -                           |
 
 ### Query Parameters
 
