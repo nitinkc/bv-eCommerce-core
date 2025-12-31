@@ -45,12 +45,19 @@ springdoc:
     operations-sorter: alpha
   packages-to-scan: com.bitvelocity.product.controller
 
+# JWT Configuration (same as auth-service for token validation)
+jwt:
+  secret: ${JWT_SECRET:bitvelocity-super-secret-key-change-in-production-use-at-least-256-bits-for-hs256}
+  access-token-expiration: 900000  # 15 minutes (must match auth-service)
+  issuer: bitvelocity-auth-service
+
 # Logging
 logging:
   level:
     root: INFO
     com.bitvelocity.product: DEBUG
     org.springframework.web: INFO
+    org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 

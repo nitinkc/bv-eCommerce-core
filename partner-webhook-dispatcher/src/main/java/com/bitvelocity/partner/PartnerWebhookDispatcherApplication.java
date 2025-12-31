@@ -9,4 +9,3 @@ public class PartnerWebhookDispatcherApplication {
         SpringApplication.run(PartnerWebhookDispatcherApplication.class, args);
     }
 }
-

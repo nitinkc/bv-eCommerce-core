@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -142,71 +145,89 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Create product", description = "Create a new product")
+    @Operation(summary = "Create product", description = "Create a new product (requires ADMIN or VENDOR role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Product created successfully",
                      content = @Content(schema = @Schema(implementation = ProductResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid request body",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Missing or invalid JWT token"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
         @ApiResponse(responseCode = "409", description = "Product with SKU already exists",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class)))
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDOR')")
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(
-            @Valid @RequestBody CreateProductRequest request) {
+            @Valid @RequestBody CreateProductRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         
-        log.info("POST /products - Creating product with SKU: {}", request.getSku());
-        ProductResponse response = productService.createProduct(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @Operation(summary = "Update product", description = "Update an existing product")
+        log.info("POST /products - User {} creating product with SKU: {}", 
+    @Operation(summary = "Update product", description = "Update an existing product (requires ADMIN or VENDOR role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Product updated successfully",
                      content = @Content(schema = @Schema(implementation = ProductResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid request body",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Missing or invalid JWT token"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
         @ApiResponse(responseCode = "404", description = "Product not found",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class)))
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDOR')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @Parameter(description = "Product UUID") @PathVariable UUID id,
-            @Valid @RequestBody UpdateProductRequest request) {
+            @Valid @RequestBody UpdateProductRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         
-        log.info("PUT /products/{} - Updating product", id);
+        log.info("PUT /products/{} - User {} updating product", id, userDetails.getUsername());
         ProductResponse response = productService.updateProduct(id, request);
         return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Update product stock", description = "Update stock quantity for a product")
+    }       @Valid @RequestBody UpdateProductRequest request) {
+        
+        log.info("PUT /products/{} - Updating product", id);
+    @Operation(summary = "Update product stock", description = "Update stock quantity for a product (requires ADMIN or VENDOR role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Stock updated successfully",
                      content = @Content(schema = @Schema(implementation = ProductResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid request body",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Missing or invalid JWT token"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
         @ApiResponse(responseCode = "404", description = "Product not found",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class)))
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDOR')")
     @PatchMapping("/{id}/stock")
     public ResponseEntity<ProductResponse> updateProductStock(
             @Parameter(description = "Product UUID") @PathVariable UUID id,
-            @Valid @RequestBody UpdateStockRequest request) {
+            @Valid @RequestBody UpdateStockRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         
-        log.info("PATCH /products/{}/stock - Updating stock to {}", id, request.getStockQuantity());
+        log.info("PATCH /products/{}/stock - User {} updating stock to {}", 
+                id, userDetails.getUsername(), request.getStockQuantity());
         ProductResponse response = productService.updateProductStock(id, request);
         return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Delete product", description = "Delete a product by ID")
+    }   
+    @Operation(summary = "Delete product", description = "Delete a product by ID (requires ADMIN role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Missing or invalid JWT token"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Only ADMIN can delete products"),
         @ApiResponse(responseCode = "404", description = "Product not found",
                      content = @Content(schema = @Schema(implementation = com.bitvelocity.product.exception.ErrorResponse.class)))
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(
-            @Parameter(description = "Product UUID") @PathVariable UUID id) {
+            @Parameter(description = "Product UUID") @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("DELETE /products/{} - User {} deleting product", id, userDetails.getUsername());
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }       @Parameter(description = "Product UUID") @PathVariable UUID id) {
         
         log.info("DELETE /products/{}", id);
         productService.deleteProduct(id);
