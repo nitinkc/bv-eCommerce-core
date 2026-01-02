@@ -163,6 +163,11 @@ public class ProductController {
             @AuthenticationPrincipal UserDetails userDetails) {
         
         log.info("POST /products - User {} creating product with SKU: {}", 
+                userDetails.getUsername(), request.getSku());
+        ProductResponse response = productService.createProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @Operation(summary = "Update product", description = "Update an existing product (requires ADMIN or VENDOR role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Product updated successfully",
@@ -184,9 +189,8 @@ public class ProductController {
         log.info("PUT /products/{} - User {} updating product", id, userDetails.getUsername());
         ProductResponse response = productService.updateProduct(id, request);
         return ResponseEntity.ok(response);
-    }       @Valid @RequestBody UpdateProductRequest request) {
-        
-        log.info("PUT /products/{} - Updating product", id);
+    }
+
     @Operation(summary = "Update product stock", description = "Update stock quantity for a product (requires ADMIN or VENDOR role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Stock updated successfully",
@@ -209,7 +213,8 @@ public class ProductController {
                 id, userDetails.getUsername(), request.getStockQuantity());
         ProductResponse response = productService.updateProductStock(id, request);
         return ResponseEntity.ok(response);
-    }   
+    }
+
     @Operation(summary = "Delete product", description = "Delete a product by ID (requires ADMIN role)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
@@ -225,11 +230,6 @@ public class ProductController {
             @AuthenticationPrincipal UserDetails userDetails) {
         
         log.info("DELETE /products/{} - User {} deleting product", id, userDetails.getUsername());
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }       @Parameter(description = "Product UUID") @PathVariable UUID id) {
-        
-        log.info("DELETE /products/{}", id);
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }

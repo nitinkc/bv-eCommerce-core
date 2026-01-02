@@ -1,6 +1,8 @@
 package com.bitvelocity.product.security;
 
 import com.bit.velocity.common.security.jwt.JwtTokenService;
+import com.bit.velocity.common.security.jwt.JwtClaims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,42 +55,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Extract JWT token
             final String jwt = authHeader.substring(7);
 
-            // Validate token
-            if (jwtTokenService.validateToken(jwt)) {
-                // Extract user information from token
-                String username = jwtTokenService.extractUsername(jwt);
-                Set<String> roles = jwtTokenService.extractRoles(jwt);
+            // Validate token and extract claims
+            JwtClaims claims = jwtTokenService.validateToken(jwt);
+            
+            String username = claims.getUsername();
+            Set<String> roles = claims.getRoles();
 
-                // Only set authentication if context doesn't have one already
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Convert roles to authorities
-                    var authorities = roles.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
+            // Only set authentication if context doesn't have one already
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Convert roles to authorities
+                var authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-                    // Create UserDetails
-                    UserDetails userDetails = User.builder()
-                            .username(username)
-                            .password("") // Not needed for JWT
-                            .authorities(authorities)
-                            .build();
+                // Create UserDetails
+                UserDetails userDetails = User.builder()
+                        .username(username)
+                        .password("") // Not needed for JWT
+                        .authorities(authorities)
+                        .build();
 
-                    // Create authentication token
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            authorities
-                    );
+                // Create authentication token
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        authorities
+                );
 
-                    // Set additional details
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // Set additional details
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // Set authentication in context
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Set authentication in context
+                SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                    log.debug("Set authentication for user: {} with roles: {}", username, roles);
-                }
+                log.debug("Set authentication for user: {} with roles: {}", username, roles);
             }
+        } catch (JwtException e) {
+            log.error("JWT validation failed: {}", e.getMessage());
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
         }
